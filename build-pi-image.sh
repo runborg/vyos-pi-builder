@@ -23,15 +23,15 @@ crash_cleanup() {
     if [ ! -z "$ISOLOOP" ]; then
         echo "ISOLOOP : ${ISOLOOP}"
         echo "Unmounting ISO"
-        umount ${ISOLOOP}
-        losetup -d ${ISOLOOP}
+        umount ${ISOLOOP} || true
+        losetup -d ${ISOLOOP} || true
     fi
     if [ ! -z "${LOOPDEV}" ]; then
         echo "LOOPDEV : ${LOOPDEV}"
         echo "Unmounting root"
-        umount ${LOOPDEV}p1
-        umount ${LOOPDEV}p2
-        losetup -d ${LOOPDEV}
+        umount ${LOOPDEV}p1 || true
+        umount ${LOOPDEV}p2 || true
+        losetup -d ${LOOPDEV} || true
     fi
 }
 trap "crash_cleanup" ERR
@@ -243,9 +243,9 @@ echo "config.txt"
 cat ${EFIDIR}/config.txt
 echo "DONE!!"
 # unmount image
+umount ${ISODIR}
 umount ${EFIDIR}
 umount ${ROOTDIR}
-umount ${ISODIR}
 
  
 #write uboot to image
@@ -253,6 +253,6 @@ umount ${ISODIR}
  
 #unmount image
 sudo losetup -d ${LOOPDEV}
-sudo losetup -d ${ISODEV} 
+sudo losetup -d ${ISOLOOP} 
 
-zip c ${IMGNAME}
+zip ${IMGNAME}.zip ${IMGNAME}
