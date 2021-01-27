@@ -17,29 +17,77 @@ set -e
 # File: build-pi3-image
 # Purpose:
 # Build VyOS image for for Raspberry PI 4.
- 
-if ! [ -f "${UBOOTBIN}" ]; then
-    echo "UBOOTBIN env variable needs to be set"
-        exit 1
-fi
+
+crash_cleanup() {
+    echo "OOOPS!!! we crashed.. :/ starting a crude cleanup."
+    if [ ! -z "$ISOLOOP" ]; then
+        echo "ISOLOOP : ${ISOLOOP}"
+        echo "Unmounting ISO"
+        umount ${ISOLOOP}
+        losetup -d ${ISOLOOP}
+    fi
+    if [ ! -z "${LOOPDEV}" ]; then
+        echo "LOOPDEV : ${LOOPDEV}"
+        echo "Unmounting root"
+        umount ${LOOPDEV}p1
+        umount ${LOOPDEV}p2
+        losetup -d ${LOOPDEV}
+    fi
+}
+trap "crash_cleanup" ERR
+
+
 if [[ ${EUID} -ne 0 ]]; then
-        echo " !!! This tool must be run as root"
-        exit 1
+    echo "ERROR: This tool must be run as root"
+    exit 1
 fi
- 
+
+if [ -z "$1" ]; then
+    echo "ERROR: no ISO file entered as an argument"
+    exit 1
+fi
+
+if ! [ -f ${ISOFILE} ]; then
+    echo "ERROR: ISO file not supplied or does not exist"
+    exit 1
+fi
+
+
+if [ -f "${UBOOTBIN}" ]; then
+    echo "Using uboot from ${UBOOTBIN}"
+elif [ -f "u-boot.bin" ]; then
+    echo "Using uboot from ./u-boot.bin"
+    UBOOTBIN="u-boot.bin"
+else
+    echo "ERROR: u-boot.bin not found and UBOOTBIN env variable is not set"
+    exit 1
+fi
+
+echo "VYOS Raspberry Pi3/4 image builder"
+
+# get input and output filename
+ISOFILE=$1
+IMGFILE="${ISOFILE%.*}.img"
+
+
+echo "Using input file:  ${ISOFILE}"
+echo "Using output file: ${IMGFILE}"
  
 # Build image
 #lb build | tee build_log
- 
+
 # Get build version
-VERSION=$(cat version)
-DATEYMD=$(date +%Y%m%d)
+# This needs a rework, needs to be collected from the iso
+VERSION="image" #$(cat version)
  
 DEVTREE="bcm2711-rpi-4-b"
-IMGNAME="pi4-vyos-MEH-testing.img"
- 
- 
-# Mount image and instasll filesystems
+IMGNAME="${IMGFILE}"
+
+# Mounting ISO
+ISOLOOP=$(losetup --show -f ${ISOFILE})
+echo "Mounted iso on loopback: $ISOLOOP"
+
+# Mount image and create filesystems
 qemu-img create -f raw ${IMGNAME} 1.8G
 parted --script "${IMGNAME}" mklabel msdos
 parted --script "${IMGNAME}" mkpart primary fat16 8192s 60
@@ -55,22 +103,29 @@ mkfs.ext4 -L persistence ${LOOPDEV}p2
  
  
 ROOTDIR="/mnt"
+ISODIR="${ROOTDIR}/iso"
 BOOTDIR="${ROOTDIR}/boot/${VERSION}"
 EFIDIR="${ROOTDIR}/boot/efi"
- 
- 
+
+
 mkdir -p ${ROOTDIR}
 mount ${LOOPDEV}p2 ${ROOTDIR}
  
 mkdir -p ${EFIDIR}
 mount ${LOOPDEV}p1 ${EFIDIR}
+
+mkdir -p ${ISODIR}
+mount ${ISOLOOP} ${ISODIR}
  
 mkdir -p ${ROOTDIR}/boot/grub
 mkdir -p ${BOOTDIR}/rw
+echo "Files in ISO:"
+ls -al ${ISODIR}/live
+
 echo "/ union" > ${ROOTDIR}/persistence.conf
-cp binary/live/filesystem.squashfs ${BOOTDIR}/${VERSION}.squashfs
-cp binary/live/initrd.img-* ${BOOTDIR}/initrd.img
-cp binary/live/vmlinuz-* ${BOOTDIR}/vmlinuz
+cp ${ISODIR}/live/filesystem.squashfs ${BOOTDIR}/${VERSION}.squashfs
+cp ${ISODIR}/live/initrd.img-* ${BOOTDIR}/initrd.img
+cp ${ISODIR}/live/vmlinuz-* ${BOOTDIR}/vmlinuz
 #cp binary/live/kernel8.img ${BOOTDIR}/kernel8
 #cp binary/live/initrd.img-* ${EFIDIR}/initrd.img
 #cp binary/live/vmlinuz-* ${EFIDIR}/vmlinuz
@@ -84,7 +139,7 @@ cp binary/live/vmlinuz-* ${BOOTDIR}/vmlinuz
 curl -o ${EFIDIR}/fixup4.dat https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/fixup4.dat
 curl -o ${EFIDIR}/start4.elf https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/start4.elf
 curl -o ${EFIDIR}/bcm2711-rpi-4-b.dtb https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/${DEVTREE}.dtb
-curl -o ${ROOTDIR}/boot/kernel8.img https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/kernel8.img
+#curl -o ${ROOTDIR}/boot/kernel8.img https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/kernel8.img
 #cp ../tools/u-boot-${DEVTREE}.bin ${EFIDIR}/u-boot.bin
 cp ${UBOOTBIN} ${EFIDIR}/u-boot.bin
  
@@ -190,11 +245,14 @@ echo "DONE!!"
 # unmount image
 umount ${EFIDIR}
 umount ${ROOTDIR}
+umount ${ISODIR}
+
  
 #write uboot to image
 #dd if=../tools/u-boot-spl.kwb of=${LOOPDEV} bs=512 seek=1
  
 #unmount image
 sudo losetup -d ${LOOPDEV}
- 
+sudo losetup -d ${ISODEV} 
+
 zip c ${IMGNAME}
