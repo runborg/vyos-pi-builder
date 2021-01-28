@@ -1,0 +1,7 @@
+u-boot/
+
+
+*.bin
+*.zip
+*.img
+*.iso

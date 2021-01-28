@@ -1,5 +1,22 @@
-#!/bin/sh
-set -x
+#!/bin/bash
+if [ ! -z "${DEBUG}" ]; then
+    echo "Enable debugging"
+    set -x
+    exec 3>&1
+else
+    exec 3>/dev/null
+fi
+
+exec 4> >(
+    # Hotfix to hide stderr messages from applications that cant be "silent" eg grub-install
+    while IFS='' read -r line || [ -n "$line" ]; do
+        # Hide "Garbage" from GRUB installer
+        [[ "${line}" =~ "Installing for arm64-efi platform" ]] && continue
+        [[ "${line}" =~ "EFI variables are not supported on this system" ]] && continue
+        [[ "${line}" =~ "No error reported" ]] && continue
+        echo -e "${line}"
+    done
+)
 set -e
 #
 # Copyright (C) 2019 VyOS maintainers and contributors
@@ -38,17 +55,17 @@ trap "crash_cleanup" ERR
 
 
 if [[ ${EUID} -ne 0 ]]; then
-    echo "ERROR: This tool must be run as root"
+    1>&2 echo "ERROR: This tool must be run as root"
     exit 1
 fi
 
 if [ -z "$1" ]; then
-    echo "ERROR: no ISO file entered as an argument"
+    1>&2 echo "ERROR: no ISO file entered as an argument"
     exit 1
 fi
 
 if ! [ -f ${ISOFILE} ]; then
-    echo "ERROR: ISO file not supplied or does not exist"
+    1>&2 echo "ERROR: ISO file not supplied or does not exist"
     exit 1
 fi
 
@@ -59,7 +76,7 @@ elif [ -f "u-boot.bin" ]; then
     echo "Using uboot from ./u-boot.bin"
     UBOOTBIN="u-boot.bin"
 else
-    echo "ERROR: u-boot.bin not found and UBOOTBIN env variable is not set"
+    1>&2 echo "ERROR: u-boot.bin not found and UBOOTBIN env variable is not set"
     exit 1
 fi
 
@@ -85,21 +102,21 @@ IMGNAME="${IMGFILE}"
 
 # Mounting ISO
 ISOLOOP=$(losetup --show -f ${ISOFILE})
-echo "Mounted iso on loopback: $ISOLOOP"
+echo "Mounting iso on loopback: $ISOLOOP"
 
 # Mount image and create filesystems
-qemu-img create -f raw ${IMGNAME} 1.8G
-parted --script "${IMGNAME}" mklabel msdos
-parted --script "${IMGNAME}" mkpart primary fat16 8192s 60
-parted --script "${IMGNAME}" mkpart primary ext4 60 1900
-parted --script "${IMGNAME}" set 1 boot on
+qemu-img create -f raw ${IMGNAME} 1.8G 1>&3
+parted --script "${IMGNAME}" mklabel msdos 1>&3
+parted --script "${IMGNAME}" mkpart primary fat16 8192s 60 1>&3
+parted --script "${IMGNAME}" mkpart primary ext4 60 1900 1>&3
+parted --script "${IMGNAME}" set 1 boot on 1>&3
  
 # Create and mount image partitions
 LOOPDEV=$(losetup --show -f ${IMGNAME})
-echo "Mounted ${IMGNAME} on loopback: ${LOOPDEV}"
-partprobe ${LOOPDEV}
-mkfs.vfat -n EFI -F 16 -I ${LOOPDEV}p1
-mkfs.ext4 -L persistence ${LOOPDEV}p2
+echo "Mounting ${IMGNAME} on loopback: ${LOOPDEV}"
+partprobe ${LOOPDEV} 1>&3
+mkfs.vfat -n EFI -F 16 -I ${LOOPDEV}p1 1>&3
+mkfs.ext4 -q -L persistence ${LOOPDEV}p2 1>&3
  
  
 ROOTDIR="/mnt"
@@ -109,40 +126,37 @@ EFIDIR="${ROOTDIR}/boot/efi"
 
 
 mkdir -p ${ROOTDIR}
-mount ${LOOPDEV}p2 ${ROOTDIR}
+mount ${LOOPDEV}p2 ${ROOTDIR} 1>&3
  
 mkdir -p ${EFIDIR}
-mount ${LOOPDEV}p1 ${EFIDIR}
+mount ${LOOPDEV}p1 ${EFIDIR} 1>&3
 
 mkdir -p ${ISODIR}
-mount ${ISOLOOP} ${ISODIR}
+mount -o ro ${ISOLOOP} ${ISODIR} 1>&3
  
 mkdir -p ${ROOTDIR}/boot/grub
 mkdir -p ${BOOTDIR}/rw
-echo "Files in ISO:"
-ls -al ${ISODIR}/live
 
+if [ ! -z "${DEBUG}" ]; then 
+    echo "Files in ISO:"
+    ls -al ${ISODIR}/live
+fi
+
+echo "Copying system files from iso to image"
 echo "/ union" > ${ROOTDIR}/persistence.conf
 cp ${ISODIR}/live/filesystem.squashfs ${BOOTDIR}/${VERSION}.squashfs
 cp ${ISODIR}/live/initrd.img-* ${BOOTDIR}/initrd.img
 cp ${ISODIR}/live/vmlinuz-* ${BOOTDIR}/vmlinuz
-#cp binary/live/kernel8.img ${BOOTDIR}/kernel8
-#cp binary/live/initrd.img-* ${EFIDIR}/initrd.img
-#cp binary/live/vmlinuz-* ${EFIDIR}/vmlinuz
-#cp binary/live/kernel8.img ${EFIDIR}/kernel8
- 
-#cp armstub8-gic.bin ${EFIDIR}/armstub8-gic.bin
-#cp ../tools/${DEVTREE}.dtb ${EFIDIR}/
  
 # Copy rpi firmware files
 #(CDIR=$(pwd); cd ${EFIDIR}; tar fzxv ${CDIR}/../tools/rpi4-bootfiles.tgz --owner=0 --group=0) || true
-curl -o ${EFIDIR}/fixup4.dat https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/fixup4.dat
-curl -o ${EFIDIR}/start4.elf https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/start4.elf
-curl -o ${EFIDIR}/bcm2711-rpi-4-b.dtb https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/${DEVTREE}.dtb
-#curl -o ${ROOTDIR}/boot/kernel8.img https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/kernel8.img
-#cp ../tools/u-boot-${DEVTREE}.bin ${EFIDIR}/u-boot.bin
+echo "Downloading PI Boot files"
+curl -s -o ${EFIDIR}/fixup4.dat https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/fixup4.dat 1>&3
+curl -s -o ${EFIDIR}/start4.elf https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/start4.elf 1>&3
+curl -s -o ${EFIDIR}/bcm2711-rpi-4-b.dtb https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/${DEVTREE}.dtb 1>&3
 cp ${UBOOTBIN} ${EFIDIR}/u-boot.bin
- 
+
+echo "Installing GRUB"
 cat > ${EFIDIR}/config.txt << EOF
 # Enable 64bit mode
 arm_64bit=1
@@ -155,21 +169,6 @@ dtoverlay=pi3-disable-bt
 kernel=u-boot.bin
 EOF
  
-#echo 'arm_64bit=1'      >> ${EFIDIR}/config.txt
-#echo 'enable_uart=1'    >> ${EFIDIR}/config.txt
-#echo 'kernel=u-boot.bin'>> ${EFIDIR}/config.txt
-#echo 'enable_gic=1' >> ${EFIDIR}/config.txt
-#echo 'dtoverlay=upstream' >> ${EFIDIR}/config.txt
-#echo 'armstub=armstub8-gic.bin' >> ${EFIDIR}/config.txt
-#echo 'initramfs=initrd' >> ${EFIDIR}/config.txt
-#echo 'boot=live quiet vyos-union=/boot/${VERSION} console=tty1 console=ttyS0,115200n8' >> ${EFIDIR}/cmdline.txt
- 
-# Create u-boot bootscript
-# Load DTB
-# DTB is loaded by the 1stage bootloader on the pi, we dont need to touch it :)
-#   echo "Loading ${DEVTREE}.dtb"
-#   load mmc 0:1 \$fdt_addr_r ${DEVTREE}.dtb
-#   fdt addr \$fdt_addr_r 2000
 cat > ${EFIDIR}/boot.script << EOF
 # Load EFI
 echo "Loading EFI image ..."
@@ -186,7 +185,7 @@ EOF
  
  
 # compile boot script for u-boot
-mkimage -A arm -O linux -T script -C none -a 0 -e 0 -d ${EFIDIR}/boot.script ${EFIDIR}/boot.scr
+mkimage -A arm -O linux -T script -C none -a 0 -e 0 -d ${EFIDIR}/boot.script ${EFIDIR}/boot.scr 1>&3
  
  
 # create grub config file to include
@@ -226,7 +225,7 @@ menuentry "Lost password change $version (Serial console)" {
 EOF
  
 # install efi grub to image
-grub-install  --efi-directory ${EFIDIR} --boot-directory ${BOOTDIR} -d /usr/lib/grub/arm64-efi ${LOOPDEV}
+grub-install  --efi-directory ${EFIDIR} --boot-directory ${BOOTDIR} -d /usr/lib/grub/arm64-efi ${LOOPDEV} 1>&3 2>&4
  
 # create grub efi executable
 grub-mkimage -O arm64-efi -p ${BOOTDIR}/grub -d /usr/lib/grub/arm64-efi -c ${ROOTDIR}/boot/grub/load.cfg \
@@ -234,14 +233,16 @@ grub-mkimage -O arm64-efi -p ${BOOTDIR}/grub -d /usr/lib/grub/arm64-efi -c ${ROO
         search search_fs_uuid ls normal gzio png fat gettext font minicmd \
         gfxterm gfxmenu video video_fb part_msdos part_gpt \
         > ${EFIDIR}/EFI/debian/grubarm.efi
- 
-echo "Files in EFI Partition:"
-find ${EFIDIR}
-echo "Files in ROOT partition:"
-find ${ROOTDIR}
-echo "config.txt"
-cat ${EFIDIR}/config.txt
-echo "DONE!!"
+if [ ! -z "${DEBUG}" ]; then 
+    echo "Files in EFI Partition:"
+    find ${EFIDIR}
+    echo "Files in ROOT partition:"
+    find ${ROOTDIR}
+    echo "config.txt"
+    cat ${EFIDIR}/config.txt
+fi
+
+echo "Unmounting disks"
 # unmount image
 umount ${ISODIR}
 umount ${EFIDIR}
@@ -254,5 +255,6 @@ umount ${ROOTDIR}
 #unmount image
 sudo losetup -d ${LOOPDEV}
 sudo losetup -d ${ISOLOOP} 
-
-zip ${IMGNAME}.zip ${IMGNAME}
+echo "Compressing image"
+zip ${IMGNAME}.zip ${IMGNAME} 1>&3
+echo "Done"

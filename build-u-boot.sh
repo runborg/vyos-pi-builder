@@ -1,0 +1,27 @@
+#!/bin/bash
+if [ ! -z "${DEBUG}" ]; then
+    set -x
+fi
+set -e
+
+if [ ! -d "u-boot" ]; then
+    git clone git://git.denx.de/u-boot.git
+else
+    echo "Using existing u-boot repository"
+    EXIST="yes"
+fi
+
+(
+    cd u-boot
+    echo "Configuring u-boot for PI4"
+    make -s rpi_4_defconfig 
+    echo "Building u-boot for PI4"
+    make -s
+)
+
+mv u-boot/u-boot.bin u-boot.bin
+
+if [ -z "${EXIST}" ]; then
+    echo "Cleaning up"
+    rm -rf u-boot
+fi
