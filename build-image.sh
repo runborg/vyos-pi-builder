@@ -1,5 +1,6 @@
 set -x
 set -e
+ROOTDIR=$(pwd)
 
 # Build all packages
 bash build-packages.sh
@@ -30,6 +31,8 @@ rm -rf data/live-build-config/hooks/live/30-openvmtools-configs.chroot
 # Build the image
 ./configure
 make iso
+
+cd $ROOTDIR
 
 # Build u-boot
 bash build-u-boot.sh
