@@ -169,7 +169,7 @@ cd $BUILDDIR/vyos-build/packages/netfilter
 if ! ls *nftables*.deb; then
     if [ ! -d pkg-nftables ]; then
         echo "Fetching nftables"
-          git clone https://salsa.debian.org/pkg-netfilter-team/pkg-nftables.git -b debian/0.9.6-1 pkg-nftables
+          git clone https://salsa.debian.org/pkg-netfilter-team/pkg-nftables.git -b 'debian/0.9.6-1' pkg-nftables
     fi
     cd $BUILDDIR/vyos-build/packages/netfilter/pkg-nftables
     dpkg -i ../libnftnl*.deb 
@@ -182,7 +182,7 @@ cd $BUILDDIR/vyos-build/packages/netfilter
 if ! ls *libnetfilter-conntrack*.deb; then
     if [ ! -d pkg-libnetfilter-conntrack ]; then
         echo "Fetching pkg-libnetfilter-conntrack"
-          git clone https://salsa.debian.org/pkg-netfilter-team/pkg-libnetfilter-conntrack.git -b debian/1.0.8-1 pkg-libnetfilter-conntrack
+          git clone https://salsa.debian.org/pkg-netfilter-team/pkg-libnetfilter-conntrack.git -b 'debian/1.0.8-1' pkg-libnetfilter-conntrack
     fi
       cd $BUILDDIR/vyos-build/packages/netfilter/pkg-libnetfilter-conntrack
       dpkg-buildpackage -uc -us -tc -b -d
@@ -205,8 +205,8 @@ cd $BUILDDIR/vyos-build/packages/wide-dhcpv6
 if ! ls *.deb; then
     if [ ! -d wide-dhcpv6 ]; then
         echo "Fetching wide-dhcpv6"
-          git clone https://salsa.debian.org/debian/wide-dhcpv6 -b debian/20080615-23 wide-dhcpv6
+          git clone https://salsa.debian.org/debian/wide-dhcpv6 -b 'debian/20080615-23' wide-dhcpv6
     fi
-      cd $BUILDDIR/vyos-build/packages/wide-dhcpv6 
-      ./build-wide.sh
+    cd $BUILDDIR/vyos-build/packages/wide-dhcpv6 
+    bash -x -e ./build-wide.sh
 fi
