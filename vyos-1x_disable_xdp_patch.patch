@@ -1,0 +1,13 @@
+diff --git a/python/vyos/ifconfig/interface.py b/python/vyos/ifconfig/interface.py
+index fe6a3c95..be26694c 100644
+--- a/python/vyos/ifconfig/interface.py
++++ b/python/vyos/ifconfig/interface.py
+@@ -1048,6 +1048,8 @@ class Interface(Control):
+         >>> i = Interface('eth0')
+         >>> i.set_xdp(True)
+         """
++        if not os.path.exists('/usr/sbin/xdp_loader'):
++            return
+         if not isinstance(state, bool):
+             raise ValueError("Value out of range")
+ 

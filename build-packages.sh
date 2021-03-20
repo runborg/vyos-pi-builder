@@ -83,6 +83,9 @@ for x in vyos-1x vyos-utils vyos-world vyatta-conntrack mdns-repeater hvinfo ipa
             echo "Installing deps for conntrack-tools"
             apt install -y dh-systemd libnetfilter-conntrack-dev
         fi
+	if [[ "$x" == "vyos-1x" ]]; then
+	    sudo patch -p 1 -u -d $BUILDDIR/$x < $CWD/vyos-1x_disable_xdp_patch.patch
+	fi
         echo "Building $x"
 	cd $BUILDDIR/$x
    	dpkg-buildpackage -b -us -uc -tc
