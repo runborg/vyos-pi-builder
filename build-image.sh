@@ -38,7 +38,8 @@ cd $ROOTDIR
 bash build-u-boot.sh
 
 # Install some needed dependencies for image build that is not in the container
-apt install parted udev zip
+apt update
+apt install -y parted udev zip
 
 # Generate PI4 image from the iso
 bash build-pi-image.sh vyos-build/build/live-image-arm64.hybrid.iso
