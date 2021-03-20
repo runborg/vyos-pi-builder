@@ -203,7 +203,7 @@ EOF
  
 # Create grub menu file
 cat > ${ROOTDIR}/boot/grub/grub.cfg << EOF
-set default=0
+set default=1
 set timeout=5
  
 echo -n Press ESC to enter the Grub menu...
@@ -212,11 +212,11 @@ if sleep --verbose --interuptable 5 ; then
 fi
  
 menuentry "VyOS $version (Serial console)" {
-        linux /boot/${VERSION}/vmlinuz boot=live vyos-union=/boot/${VERSION} console=ttyAMA0,115200n8 earlycon=pl011,0xfe201000
+        linux /boot/${VERSION}/vmlinuz boot=live vyos-union=/boot/${VERSION} console=ttyAMA0,115200n8 earlycon=pl011,0xfe201000 noautologin
         initrd /boot/${VERSION}/initrd.img
 }
 menuentry "VyOS $version (Graphical console)" {
-        linux /boot/${VERSION}/vmlinuz boot=live vyos-union=/boot/${VERSION}
+        linux /boot/${VERSION}/vmlinuz boot=live vyos-union=/boot/${VERSION} noautologin
         initrd /boot/${VERSION}/initrd.img
 }
  
