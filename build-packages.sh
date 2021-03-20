@@ -64,6 +64,7 @@ eval $(opam env --root=/opt/opam --set-root)
 # Build vyos repositories:
 # Disabled repos: conntrack-tools
 for x in vyos-1x vyos-utils vyos-world vyatta-conntrack mdns-repeater hvinfo ipaddrcheck libvyosconfig libnss-mapuser libpam-radius-auth vyos-strongswan libnetfilter-conntrack vyatta-cfg udp-broadcast-relay vyatta-bash vyatta-wanloadbalance vyos-opennhrp vyos-nhrp vyatta-cfg-vpn vyatta-op-vpn; do
+    cd $BUILDDIR
     echo "Checking for $x"
     FILECHECK=$x
     if [[ "$x" == "vyos-strongswan" ]]; then
@@ -72,7 +73,6 @@ for x in vyos-1x vyos-utils vyos-world vyatta-conntrack mdns-repeater hvinfo ipa
     if ! ls *$FILECHECK*.deb; then
 	if [ ! -d $x ]; then
 	    echo "$x not found, fetching"
-	    cd $BUILDDIR
 	    git clone git://github.com/vyos/$x $x
 	fi
 	if [[ "$x" == "vyos-utils" ]]; then
