@@ -1,5 +1,6 @@
 u-boot/
 build/
+vyos-build/
 
 *.bin
 *.zip
