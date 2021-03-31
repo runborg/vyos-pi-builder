@@ -44,43 +44,10 @@ fi
 
 # Packages to build: 
 # accel-ppp
-# frr
 # linux-kernel
-# OK: hvinfo
-# OK: ipaddrcheck
-# OK: libnss-mapuser
-# OK: libpam-radius-auth
-# OK: libvyosconfig
-# OK: mdns-repeater
-# OK: vyatta-conntrack
-# OK: vyos-1x
-# vyos1x-config
-# OK: vyos-utils
-# OK: vyos-world
 
 #Install deps and setup vyos-utils
 eval $(opam env --root=/opt/opam --set-root) 
-
-# Build vyos repositories:
-# Disabled repos: conntrack-tools
-for x in vyos-1x; do
-    cd $BUILDDIR
-    echo "Checking for $x"
-    FILECHECK=$x
-    if ! ls *$FILECHECK*.deb; then
-	if [ ! -d $x ]; then
-	    echo "$x not found, fetching"
-	    git clone git://github.com/vyos/$x $x
-	fi
-	if [[ "$x" == "vyos-1x" ]]; then
-	    sudo patch -p 1 -u -d $BUILDDIR/$x < $CWD/vyos-1x_disable_xdp_patch.patch
-	fi
-        echo "Building $x"
-	cd $BUILDDIR/$x
-   	dpkg-buildpackage -b -us -uc -tc
-    fi
-done
-
 
 # Linux kernel
 cd $BUILDDIR/vyos-build/packages/linux-kernel
