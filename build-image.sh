@@ -15,8 +15,9 @@ done
 
 cd vyos-build
 #Kernel version
-KERNEL_VERSION=$(dpkg -I packages/linux-image*.deb | sed -ne "s/.*Version: \(.*\)-[0-9]/\1/p")
-KERNEL_FLAVOR=$(dpkg -I packages/linux-image*.deb | sed -ne "s/.*Package: linux-image-[^-]*-\(.*\)/\1/p")
+KERNEL_FILE=$(ls packages/linux-image*|grep -v dbg_)
+KERNEL_VERSION=$(dpkg -I $KERNEL_FILE | sed -ne "s/.*Version: \(.*\)-[0-9]/\1/p")
+KERNEL_FLAVOR=$(dpkg -I $KERNEL_FILE | sed -ne "s/.*Package: linux-image-[^-]*-\(.*\)/\1/p")
 
 # Update kernel to current version
 jq ".kernel_version=\"$KERNEL_VERSION\" | .kernel_flavor=\"$KERNEL_FLAVOR\" | .architecture=\"arm64\"" data/defaults.json > data/defaults.json.tmp

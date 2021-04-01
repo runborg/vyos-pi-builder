@@ -54,7 +54,9 @@ cd $BUILDDIR/vyos-build/packages/linux-kernel
 if ! ls *.deb; then
     if [ ! -d linux ]; then
         echo "Fetching kernel"
-	git clone --depth=1 https://github.com/raspberrypi/linux -b rpi-5.10.y linux
+	wget https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.10.27.tar.xz
+	tar fx linux-*.tar.xz
+	mv linux-*/ linux/
     fi
 
     echo "Building Kernel"
