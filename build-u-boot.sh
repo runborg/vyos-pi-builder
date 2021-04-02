@@ -19,7 +19,17 @@ fi
     make -s
 )
 
-mv u-boot/u-boot.bin u-boot.bin
+mv u-boot/u-boot.bin u-boot-rpi4.bin
+
+(
+    cd u-boot
+    echo "Configuring u-boot for PI3"
+    make -s rpi_3_defconfig
+    echo "Building u-boot for PI3"
+    make -s
+)
+
+mv u-boot/u-boot.bin u-boot-rpi3.bin
 
 if [ -z "${EXIST}" ]; then
     echo "Cleaning up"

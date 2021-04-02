@@ -29,6 +29,8 @@ sed -i "s/--bootloader syslinux,grub-efi/--bootloader grub-efi/" scripts/live-bu
 # Remove openvmtools hooks that are not needed on arm
 rm -rf data/live-build-config/hooks/live/30-openvmtools-configs.chroot
 
+cp ${ROOTDIR}/config.boot.default data/live-build-config/includes.chroot/opt/vyatta/etc/config.boot.default
+
 # Build the image
 ./configure
 make iso
@@ -43,7 +45,13 @@ apt update
 apt install -y parted udev zip
 
 # Generate PI4 image from the iso
-bash build-pi-image.sh vyos-build/build/live-image-arm64.hybrid.iso
+DEVTREE="bcm2711-rpi-4-b" PIVERSION=4 bash build-pi-image.sh vyos-build/build/live-image-arm64.hybrid.iso
+
+# Generate PI3B image from the iso
+DEVTREE="bcm2710-rpi-3-b" PIVERSION=3 bash build-pi-image.sh vyos-build/build/live-image-arm64.hybrid.iso
+
+# Generate PI3B+ image from the iso
+DEVTREE="bcm2710-rpi-3-b-plus" PIVERSION=3 bash build-pi-image.sh vyos-build/build/live-image-arm64.hybrid.iso
 
 # Symlink pi4 image
-ln -s vyos-build/build/live-image-arm64.hybrid.img live-image-arm64.hybrid.img
+#ln -s vyos-build/build/live-image-arm64.hybrid.img live-image-arm64.hybrid.img
