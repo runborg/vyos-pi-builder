@@ -138,6 +138,7 @@ mount ${LOOPDEV}p2 ${ROOTDIR} 1>&3
  
 mkdir -p ${EFIDIR}
 mount ${LOOPDEV}p1 ${EFIDIR} 1>&3
+mkdir -p ${EFIDIR}/overlays
 
 mkdir -p ${ISODIR}
 mount -o ro ${ISOLOOP} ${ISODIR} 1>&3
@@ -162,6 +163,7 @@ echo "Downloading PI Boot files"
 if [ "${PIVERSION}" == "4" ]; then
     curl -s -o ${EFIDIR}/fixup4.dat https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/fixup4.dat 1>&3
     curl -s -o ${EFIDIR}/start4.elf https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/start4.elf 1>&3
+    curl -s -o ${EFIDIR}/overlays/dwc2.dtbo https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/overlays/dwc2.dtbo 1>&3
 elif [ "${PIVERSION}" == "3" ]; then
     curl -s -o ${EFIDIR}/bootcode.bin https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/bootcode.bin 1>&3
     curl -s -o ${EFIDIR}/fixup.dat https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/fixup.dat 1>&3
@@ -171,6 +173,11 @@ curl -s -o ${EFIDIR}/${DEVTREE}.dtb https://raw.githubusercontent.com/raspberryp
 cp ${UBOOTBIN} ${EFIDIR}/u-boot.bin
 
 echo "Installing GRUB"
+if [ "$DEVTREE" == "bcm2711-rpi-cm4" ]; then
+  echo "Enabling overlay for CM4 usb"
+  CM4USB='dtoverlay=dwc2,dr_mode=host'
+fi
+
 cat > ${EFIDIR}/config.txt << EOF
 # Enable 64bit mode
 arm_64bit=1
@@ -178,11 +185,13 @@ arm_64bit=1
 # Enable Serial console
 enable_uart=1
 dtoverlay=pi3-disable-bt
- 
+${CM4USB}
+
 # Boot into u-boot
 kernel=u-boot.bin
 EOF
- 
+
+
 cat > ${EFIDIR}/boot.script << EOF
 # Load EFI
 echo "Loading EFI image ..."
