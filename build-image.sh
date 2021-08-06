@@ -34,10 +34,6 @@ cd $ROOTDIR
 # Build u-boot
 bash build-u-boot.sh
 
-# Install some needed dependencies for image build that is not in the container
-apt update
-apt install -y parted udev zip
-
 # Generate CM4 image from the iso
 DEVTREE="bcm2711-rpi-cm4" PIVERSION=4 bash build-pi-image.sh vyos-build/build/live-image-arm64.hybrid.iso
 
