@@ -19,9 +19,6 @@ mv data/defaults.json.tmp data/defaults.json
 # Disable syslinux
 sed -i "s/--bootloader syslinux,grub-efi/--bootloader grub-efi/" scripts/live-build-config
 
-# Remove openvmtools hooks that are not needed on arm
-rm -rf data/live-build-config/hooks/live/30-openvmtools-configs.chroot
-
 echo "Copy new default configuration to the vyos image"
 cp ${ROOTDIR}/config.boot.default data/live-build-config/includes.chroot/opt/vyatta/etc/config.boot.default
 
