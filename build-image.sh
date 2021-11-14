@@ -12,18 +12,11 @@ done
 
 cd vyos-build
 
-# Update kernel to current version
-jq " .kernel_flavor=\"v8-arm64-vyos\" | .architecture=\"arm64\"" data/defaults.json > data/defaults.json.tmp
-mv data/defaults.json.tmp data/defaults.json
-
-# Disable syslinux
-sed -i "s/--bootloader syslinux,grub-efi/--bootloader grub-efi/" scripts/live-build-config
-
 echo "Copy new default configuration to the vyos image"
 cp ${ROOTDIR}/config.boot.default data/live-build-config/includes.chroot/opt/vyatta/etc/config.boot.default
 
 # Build the image
-./configure
+VYOS_BUILD_FLAVOR=data/generic-arm64.json ./configure
 make iso
 
 cd $ROOTDIR
