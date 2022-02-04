@@ -5,6 +5,11 @@ ROOTDIR=$(pwd)
 # Clean out the build-repo and copy all custom packages
 rm -rf vyos-build
 git clone http://github.com/vyos/vyos-build vyos-build
+
+# Fix repo arm64 T4197 Issue
+sed -i "s/amd64/arm64/g" vyos-build/data/defaults.json
+sed -i '/saltproject/d' vyos-build/data/defaults.json
+
 for a in $(find build -type f -name "*.deb" | grep -v -e "-dbgsym_" -e "libnetfilter-conntrack3-dbg"); do
 	echo "Copying package: $a"
 	cp $a vyos-build/packages/
