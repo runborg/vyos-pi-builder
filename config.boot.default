@@ -43,3 +43,8 @@ interfaces {
         address dhcp
     }
 }
+
+service {
+    ssh {                                        
+    }
+}
