@@ -120,7 +120,7 @@ parted --script "${IMGNAME}" mkpart primary ext4 60 1900 1>&3
 parted --script "${IMGNAME}" set 1 boot on 1>&3
  
 # Create and mount image partitions
-LOOPDEV=$(losetup --show -f ${IMGNAME})
+LOOPDEV=$(losetup --show -f -P ${IMGNAME})
 echo "Mounting ${IMGNAME} on loopback: ${LOOPDEV}"
 partprobe ${LOOPDEV} 1>&3
 mkfs.vfat -n EFI -F 16 -I ${LOOPDEV}p1 1>&3
