@@ -41,6 +41,24 @@ Build VyOS 1.4 image on an x86 linux host using qemu-user-static and docker/podm
    make container
    ```
 
+ * Build a Pi kernel:
+   You only have to build the kernel the first time.
+
+   ```
+   sudo docker run --rm -it --platform linux/arm64 --privileged -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static -v "$(shell pwd)":/vyos -v /dev:/dev --sysctl net.ipv6.conf.lo.disable_ipv6=0 localhost/vyos/vyos-build:current-arm64 /bin/bash -c 'cd /vyos; /bin/bash -x build-pi-kernel.sh'
+   ```
+
+   or with make
+
+   ```
+   make kernel-local
+   ```
+
+   you can also take already built container in docker registry and use that.
+
+   ```
+   make kernel-registry
+   ```
  * Build a Pi image:
    ```
    git clone https://github.com/runborg/vyos-pi-builder
