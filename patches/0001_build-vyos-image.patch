@@ -1,0 +1,11 @@
+--- a/vyos-build/scripts/build-vyos-image	2022-12-31 21:23:16.613516733 +0900
++++ b/vyos-build/scripts/build-vyos-image	2022-12-31 21:23:56.269760316 +0900
+@@ -424,7 +424,7 @@
+             --bootappend-live "boot=live components hostname=vyos username=live nopersistence noautologin nonetworking union=overlay console=ttyS0,115200 console=tty0 net.ifnames=0 biosdevname=0" \
+             --bootappend-live-failsafe "live components memtest noapic noapm nodma nomce nolapic nomodeset nosmp nosplash vga=normal console=ttyS0,115200 console=tty0 net.ifnames=0 biosdevname=0" \
+             --linux-flavours {{kernel_flavor}} \
+-            --linux-packages linux-image-{{kernel_version}} \
++            --linux-packages linux-image-{{kernel_version}}-v8 \
+             --bootloader {{ bootloaders }} \
+             --binary-images iso-hybrid \
+             --checksums 'sha256 md5' \
