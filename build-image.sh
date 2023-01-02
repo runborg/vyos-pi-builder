@@ -5,10 +5,26 @@ ROOTDIR=$(pwd)
 # Clean out the build-repo and copy all custom packages
 rm -rf vyos-build
 git clone http://github.com/vyos/vyos-build vyos-build
+
+if [ ! -f build/telegraf*.deb ]; then
+	pushd vyos-build/packages/telegraf
+	git clone https://github.com/influxdata/telegraf.git -b v1.23.1 telegraf
+	bash -x ./build.sh
+	popd
+	mkdir build
+	cp vyos-build/packages/telegraf/telegraf/build/dist/telegraf_1.23.1-1_arm64.deb build/
+fi
+
 for a in $(find build -type f -name "*.deb" | grep -v -e "-dbgsym_" -e "libnetfilter-conntrack3-dbg"); do
 	echo "Copying package: $a"
 	cp $a vyos-build/packages/
 done
+
+# Patch to build-vyos-image script
+patch -t -u vyos-build/scripts/build-vyos-image < patches/0001_build-vyos-image.patch
+
+# Build to arm64.toml
+patch -t -u vyos-build/data/architectures/arm64.toml < patches/0002_arm64.toml.patch
 
 cd vyos-build
 
@@ -16,8 +32,10 @@ echo "Copy new default configuration to the vyos image"
 cp ${ROOTDIR}/config.boot.default data/live-build-config/includes.chroot/opt/vyatta/etc/config.boot.default
 
 # Build the image
-VYOS_BUILD_FLAVOR=data/generic-arm64.json ./configure
-make iso
+#VYOS_BUILD_FLAVOR=data/generic-arm64.json
+#./configure
+#make iso
+./build-vyos-image iso --architecture arm64
 
 cd $ROOTDIR
 
