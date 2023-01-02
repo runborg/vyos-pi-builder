@@ -5,6 +5,16 @@ ROOTDIR=$(pwd)
 # Clean out the build-repo and copy all custom packages
 rm -rf vyos-build
 git clone http://github.com/vyos/vyos-build vyos-build
+
+if [ ! -f build/telegraf*.deb ]; then
+	pushd vyos-build/packages/telegraf
+	git clone https://github.com/influxdata/telegraf.git -b v1.23.1 telegraf
+	bash -x ./build.sh
+	popd
+	mkdir build
+	cp vyos-build/packages/telegraf/telegraf/build/dist/telegraf_1.23.1-1_arm64.deb build/
+fi
+
 for a in $(find build -type f -name "*.deb" | grep -v -e "-dbgsym_" -e "libnetfilter-conntrack3-dbg"); do
 	echo "Copying package: $a"
 	cp $a vyos-build/packages/
@@ -15,9 +25,6 @@ patch -t -u vyos-build/scripts/build-vyos-image < patches/0001_build-vyos-image.
 
 # Build to arm64.toml
 patch -t -u vyos-build/data/architectures/arm64.toml < patches/0002_arm64.toml.patch
-
-# Set GPG key of InfluxData repository
-curl https://repos.influxdata.com/influxdb.key > vyos-build/data/live-build-config/archives/influxdb.key.chroot
 
 cd vyos-build
 
