@@ -47,7 +47,7 @@ Build VyOS 1.4 image on an x86 linux host using qemu-user-static and docker/podm
 
    The required kernel version information by VyOS is [here](https://github.com/vyos/vyos-build/blob/current/data/defaults.toml) and the provided kernel version information for Raspberry Pi is [here](https://github.com/raspberrypi/linux/blob/rpi-5.15.y/Makefile).
    
-   If the version of the kernel you need is different from the kernel provided for pi, you will need to prepare the kernel by other means instead of using the make command below.
+   If the version of the kernel you need is different from the kernel provided for pi, you will need to prepare the kernel by other means instead of using the command below.
 
    ```
    sudo docker run --rm -it --platform linux/arm64 --privileged -v /usr/bin/qemu-aarch64-static:/usr/bin/qemu-aarch64-static -v "$(shell pwd)":/vyos -v /dev:/dev --sysctl net.ipv6.conf.lo.disable_ipv6=0 localhost/vyos/vyos-build:current-arm64 /bin/bash -c 'cd /vyos; /bin/bash -x build-pi-kernel.sh'
