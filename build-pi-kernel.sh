@@ -6,8 +6,11 @@ ROOTDIR=$(pwd)
 rm -rf vyos-build
 git clone http://github.com/vyos/vyos-build vyos-build
 
-echo "Patch to build-linux-firmware.sh"
-patch -t -u vyos-build/packages/linux-kernel/build-linux-firmware.sh < patches/0000_build-linux-firmware.sh.patch
+# Patch to build-linux-firmware.sh
+#patch -t -u vyos-build/packages/linux-kernel/build-linux-firmware.sh < patches/0000_build-linux-firmware.sh.patch
+
+# Patch to vyos_defconfig
+patch -t -u vyos-build/packages/linux-kernel/arch/arm64/configs/vyos_defconfig < patches/0004_vyos_defconfig.patch
 
 cd vyos-build/packages/linux-kernel/
 

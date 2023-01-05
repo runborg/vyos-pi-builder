@@ -7,7 +7,7 @@
 \ No newline at end of file
 +kernel_flavor = "arm64-vyos"
 +
-+# Packages added to images for x86 by default
++# Packages added to images for ARM64 by default
 +packages = [
 +  "vyos-linux-firmware",
 +  "telegraf",
