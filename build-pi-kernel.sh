@@ -22,3 +22,5 @@ git clone https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmwar
 git clone https://github.com/accel-ppp/accel-ppp.git
 ./build-accel-ppp.sh
 
+cd ${ROOTDIR}
+find vyos-build/packages/linux-kernel/ -type f | grep '\.deb$' | xargs -I {} cp {} build/
