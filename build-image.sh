@@ -23,7 +23,7 @@ done
 # Patch to build-vyos-image script
 patch -t -u vyos-build/scripts/build-vyos-image < patches/0001_build-vyos-image.patch
 
-# Build to arm64.toml
+# Patch to arm64.toml
 patch -t -u vyos-build/data/architectures/arm64.toml < patches/0002_arm64.toml.patch
 
 cd vyos-build

@@ -1,5 +1,5 @@
---- a/vyos-build/packages/linux-kernel/build-linux-firmware.sh	2022-12-31 20:18:03.049039644 +0900
-+++ b/vyos-build/packages/linux-kernel/build-linux-firmware.sh	2022-12-31 20:20:28.169952304 +0900
+--- a/vyos-build/packages/linux-kernel/build-linux-firmware.sh
++++ b/vyos-build/packages/linux-kernel/build-linux-firmware.sh
 @@ -26,7 +26,7 @@
  
  result=()

@@ -1,5 +1,5 @@
---- a/vyos-build/data/architectures/arm64.toml	2022-12-31 21:26:39.310760935 +0900
-+++ b/vyos-build/data/architectures/arm64.toml	2022-12-31 21:27:31.443059203 +0900
+--- a/vyos-build/data/architectures/arm64.toml
++++ b/vyos-build/data/architectures/arm64.toml
 @@ -1,3 +1,9 @@
 -# Packages included in ARM64 images by default
 -packages = ["grub-efi-arm"]
@@ -7,7 +7,7 @@
 \ No newline at end of file
 +kernel_flavor = "arm64-vyos"
 +
-+# Packages added to images for x86 by default
++# Packages included in ARM64 images by default
 +packages = [
 +  "vyos-linux-firmware",
 +  "telegraf",

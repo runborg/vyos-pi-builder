@@ -6,7 +6,7 @@ ROOTDIR=$(pwd)
 rm -rf vyos-build
 git clone http://github.com/vyos/vyos-build vyos-build
 
-echo "Patch to build-linux-firmware.sh"
+# Patch to build-linux-firmware.sh
 patch -t -u vyos-build/packages/linux-kernel/build-linux-firmware.sh < patches/0000_build-linux-firmware.sh.patch
 
 cd vyos-build/packages/linux-kernel/
@@ -18,4 +18,3 @@ git clone https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmwar
 ./build-linux-firmware.sh
 git clone https://github.com/accel-ppp/accel-ppp.git
 ./build-accel-ppp.sh
-
