@@ -1,5 +1,5 @@
---- a/vyos-build/packages/linux-kernel/arch/arm64/configs/vyos_defconfig	2023-01-05 19:47:26.998132299 +0900
-+++ b/vyos-build/packages/linux-kernel/arch/arm64/configs/vyos_defconfig	2023-01-05 19:48:08.626381978 +0900
+--- a/vyos-build/packages/linux-kernel/arch/arm64/configs/vyos_defconfig
++++ b/vyos-build/packages/linux-kernel/arch/arm64/configs/vyos_defconfig
 @@ -21,7 +21,7 @@
  #
  CONFIG_INIT_ENV_ARG_LIMIT=32

@@ -21,7 +21,10 @@ for a in $(find build -type f -name "*.deb" | grep -v -e "-dbgsym_" -e "libnetfi
 done
 
 # Patch to build-vyos-image script
-#patch -t -u vyos-build/scripts/build-vyos-image < patches/0001_build-vyos-image.patch
+patch -t -u vyos-build/scripts/build-vyos-image < patches/0001_build-vyos-image.patch
+
+# Build to default.toml
+patch -t -u vyos-build/data/defaults.toml < patches/0005_defaults.toml.patch
 
 # Build to arm64.toml
 patch -t -u vyos-build/data/architectures/arm64.toml < patches/0002_arm64.toml.patch
