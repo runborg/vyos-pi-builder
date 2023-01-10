@@ -11,7 +11,7 @@ if [ ! -f build/telegraf*.deb ]; then
 	git clone https://github.com/influxdata/telegraf.git -b v1.23.1 telegraf
 	bash -x ./build.sh
 	popd
-	mkdir build
+	mkdir -p build
 	cp vyos-build/packages/telegraf/telegraf/build/dist/telegraf_1.23.1-1_arm64.deb build/
 fi
 
@@ -19,9 +19,6 @@ for a in $(find build -type f -name "*.deb" | grep -v -e "-dbgsym_" -e "libnetfi
 	echo "Copying package: $a"
 	cp $a vyos-build/packages/
 done
-
-# Patch to build-vyos-image script
-patch -t -u vyos-build/scripts/build-vyos-image < patches/0001_build-vyos-image.patch
 
 # Patch to arm64.toml
 patch -t -u vyos-build/data/architectures/arm64.toml < patches/0002_arm64.toml.patch

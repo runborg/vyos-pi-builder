@@ -5,7 +5,7 @@
 -packages = ["grub-efi-arm"]
 -bootloaders = "grub-efi"
 \ No newline at end of file
-+kernel_flavor = "arm64-vyos"
++kernel_flavor = "v8-arm64-vyos"
 +
 +# Packages included in ARM64 images by default
 +packages = [

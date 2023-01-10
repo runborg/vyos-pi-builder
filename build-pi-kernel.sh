@@ -9,6 +9,9 @@ git clone http://github.com/vyos/vyos-build vyos-build
 # Patch to build-linux-firmware.sh
 patch -t -u vyos-build/packages/linux-kernel/build-linux-firmware.sh < patches/0000_build-linux-firmware.sh.patch
 
+# Patch to build-kernel.sh
+patch -t -u vyos-build/packages/linux-kernel/build-kernel.sh < patches/0001_build-kernel.sh.patch
+
 cd vyos-build/packages/linux-kernel/
 
 echo "Build kernel for pi"
@@ -18,3 +21,7 @@ git clone https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmwar
 ./build-linux-firmware.sh
 git clone https://github.com/accel-ppp/accel-ppp.git
 ./build-accel-ppp.sh
+
+cd ${ROOTDIR}
+mkdir -p build
+find vyos-build/packages/linux-kernel/ -type f | grep '\.deb$' | xargs -I {} cp {} build/
