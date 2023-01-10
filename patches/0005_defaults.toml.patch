@@ -1,0 +1,4 @@
+--- a/vyos-build/data/defaults.toml
++++ b/vyos-build/data/defaults.toml
+@@ -15,0 +16 @@
++kernel_localversion = ""
