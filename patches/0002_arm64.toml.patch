@@ -1,16 +1,18 @@
---- a/vyos-build/data/architectures/arm64.toml	2022-12-31 21:26:39.310760935 +0900
-+++ b/vyos-build/data/architectures/arm64.toml	2022-12-31 21:27:31.443059203 +0900
-@@ -1,3 +1,9 @@
--# Packages included in ARM64 images by default
--packages = ["grub-efi-arm"]
--bootloaders = "grub-efi"
-\ No newline at end of file
-+kernel_flavor = "arm64-vyos"
+--- a/vyos-build/data/architectures/arm64.toml
++++ b/vyos-build/data/architectures/arm64.toml
+@@ -1,3 +1,14 @@
++additional_repositories = [
++  "deb [arch=arm64] https://repo.saltproject.io/py3/debian/11/arm64/3004 bullseye main",
++  "deb [arch=arm64] http://repo.powerdns.com/debian bullseye-rec-48 main"
++]
 +
-+# Packages added to images for x86 by default
++kernel_flavor = "v8-arm64-vyos"
++
+ # Packages included in ARM64 images by default
+-packages = ["grub-efi-arm"]
 +packages = [
 +  "vyos-linux-firmware",
 +  "telegraf",
 +  "grub-efi-arm64"
 +]
-+bootloaders = "grub-efi"
+ bootloaders = "grub-efi"
