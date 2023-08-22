@@ -45,7 +45,7 @@ Build VyOS 1.4 image on an x86 linux host using qemu-user-static and docker/podm
 
    You must build the kernel the first time and when the kernel is upgraded.
 
-   The required kernel version information by VyOS is [here](https://github.com/vyos/vyos-build/blob/current/data/defaults.toml) and the provided kernel version information for Raspberry Pi is [here](https://github.com/raspberrypi/linux/blob/rpi-5.15.y/Makefile).
+   The required kernel version information by VyOS is [here](https://github.com/vyos/vyos-build/blob/current/data/defaults.toml) and the provided kernel version information for Raspberry Pi is [here](https://github.com/raspberrypi/linux/blob/rpi-6.1.y/Makefile).
    
    If the version of the kernel you need is different from the kernel provided for pi, you will need to prepare the kernel by other means instead of using the command below.
 
