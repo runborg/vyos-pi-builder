@@ -5,7 +5,7 @@ fi
 set -e
 
 if [ ! -d "u-boot" ]; then
-    git clone git://git.denx.de/u-boot.git
+    git clone --depth=1 git://git.denx.de/u-boot.git
 else
     echo "Using existing u-boot repository"
     EXIST="yes"
@@ -16,7 +16,7 @@ fi
     echo "Configuring u-boot for PI4"
     make -s rpi_4_defconfig 
     echo "Building u-boot for PI4"
-    make -s
+    make -s -j $(getconf _NPROCESSORS_ONLN)
 )
 
 mv u-boot/u-boot.bin u-boot-rpi4.bin
