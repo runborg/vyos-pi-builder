@@ -171,8 +171,8 @@ elif [ "${PIVERSION}" == "3" ]; then
 fi
 curl -s -o ${EFIDIR}/${DEVTREE}.dtb https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/${DEVTREE}.dtb 1>&3
 
-# Need overlay to isable Bluetooth making ttyAMA0 back
-curl -s -o --create-dirsc ${EFIDIR}/overlays/disable-bt.dtbo https://github.com/raspberrypi/firmware/raw/master/boot/overlays/disable-bt.dtbo 1>&3
+# Need overlay to disable Bluetooth making ttyAMA0 back
+curl --create-dirs -s -o ${EFIDIR}/overlays/disable-bt.dtbo https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/overlays/disable-bt.dtbo 1>&3
 
 cp ${UBOOTBIN} ${EFIDIR}/u-boot.bin
 
