@@ -1,0 +1,11 @@
+diff --git a/data/architectures/arm64.toml b/data/architectures/arm64.toml
+index 3f1e4c1..eeb68cb 100644
+--- a/data/architectures/arm64.toml
++++ b/data/architectures/arm64.toml
+@@ -5,5 +5,5 @@ additional_repositories = [
+ kernel_flavor = "arm64-vyos"
+ 
+ # Packages included in ARM64 images by default
+-packages = ["grub-efi-arm64", "openvpn-dco"]
++packages = ["grub-efi-arm64", "openvpn-dco", "telegraf"]
+ bootloaders = "grub-efi"
