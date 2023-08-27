@@ -170,6 +170,10 @@ elif [ "${PIVERSION}" == "3" ]; then
     curl -s -o ${EFIDIR}/start.elf https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/start.elf 1>&3
 fi
 curl -s -o ${EFIDIR}/${DEVTREE}.dtb https://raw.githubusercontent.com/raspberrypi/firmware/master/boot/${DEVTREE}.dtb 1>&3
+
+# Need overlay to isable Bluetooth making ttyAMA0 back
+curl -s -o --create-dirsc ${EFIDIR}/overlays/disable-bt.dtbo https://github.com/raspberrypi/firmware/raw/master/boot/overlays/disable-bt.dtbo 1>&3
+
 cp ${UBOOTBIN} ${EFIDIR}/u-boot.bin
 
 echo "Installing GRUB"
@@ -184,7 +188,7 @@ arm_64bit=1
  
 # Enable Serial console
 enable_uart=1
-dtoverlay=pi3-disable-bt
+dtoverlay=disable-bt
 ${CM4USB}
 
 # Boot into u-boot
