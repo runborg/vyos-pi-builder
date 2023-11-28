@@ -23,6 +23,7 @@ fi
 
 
 cp ${rootdir}/mt7986a_bpir3_efi_sd_defconfig ${rootdir}/u-boot/configs/mt7986a_bpir3_efi_sd_defconfig
+cp ${rootdir}/uEnv_r3.txt ${rootdir}/u-boot/uEnv_r3.txt
 cd u-boot
 echo "Configuring u-boot for BPIr3"
 make -s mt7986a_bpir3_efi_sd_defconfig
@@ -31,6 +32,8 @@ make -s -j $(getconf _NPROCESSORS_ONLN)
 
 
 mv ${rootdir}/u-boot/u-boot.bin ${rootdir}/u-boot.bin
+cp ${rootdir}/u-boot/lib/efi_loader/helloworld.efi ${rootdir}/helloworld.efi
+cp ${rootdir}/u-boot/arch/arm/dts/mt7986a-bpi-r3-sd.dtb ${rootdir}
 
 if [ -z "${EXIST}" ]; then
     echo "Cleaning up"
