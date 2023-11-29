@@ -11,7 +11,7 @@ fi
 cd vyos-build
 #Patching vyos-build
 echo "I: Patching vyos-build"
-PATCH_DIR=${ROOTDIR}/patches/vyos-build
+PATCH_DIR=${ROOTDIR}/patches/vyosbuild
 for patch in $(ls ${PATCH_DIR})
 do
     echo "I: Apply patch: ${PATCH_DIR}/${patch}"

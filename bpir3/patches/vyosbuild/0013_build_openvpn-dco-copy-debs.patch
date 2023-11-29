@@ -1,0 +1,21 @@
+diff --git a/packages/linux-kernel/build-openvpn-dco.sh b/packages/linux-kernel/build-openvpn-dco.sh
+index fd42782..ef56484 100755
+--- a/packages/linux-kernel/build-openvpn-dco.sh
++++ b/packages/linux-kernel/build-openvpn-dco.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ CWD=$(pwd)
+ KERNEL_VAR_FILE=${CWD}/kernel-vars
+ 
+@@ -31,3 +31,10 @@ fpm --input-type dir --output-type deb --name openvpn-dco \
+     --license "GPL2" --chdir tmp
+ 
+ mv *.deb ..
++cd $CWD
++if [[ $? == 0 ]]; then
++    for package in $(ls openvpn-dco*.deb)
++    do
++        ln -sf linux-kernel/$package ..
++    done
++fi

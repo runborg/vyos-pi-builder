@@ -1,0 +1,21 @@
+diff --git a/packages/linux-kernel/build-accel-ppp.sh b/packages/linux-kernel/build-accel-ppp.sh
+index 1685ff8..b2593f9 100755
+--- a/packages/linux-kernel/build-accel-ppp.sh
++++ b/packages/linux-kernel/build-accel-ppp.sh
+@@ -1,4 +1,4 @@
+-#!/bin/sh
++#!/bin/bash
+ CWD=$(pwd)
+ KERNEL_VAR_FILE=${CWD}/kernel-vars
+ 
+@@ -40,3 +40,10 @@ cpack -G DEB
+ 
+ # rename resulting Debian package according git description
+ mv accel-ppp*.deb ${CWD}/accel-ppp_$(git describe --always --tags)_$(dpkg --print-architecture).deb
++cd $CWD
++if [[ $? == 0 ]]; then
++    for package in $(ls accel-ppp*.deb)
++    do
++        ln -sf linux-kernel/$package ..
++    done
++fi

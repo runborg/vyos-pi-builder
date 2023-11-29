@@ -1,0 +1,17 @@
+diff --git a/packages/linux-kernel/build-kernel.sh b/packages/linux-kernel/build-kernel.sh
+index c6db166..ca08bc4 100755
+--- a/packages/linux-kernel/build-kernel.sh
++++ b/packages/linux-kernel/build-kernel.sh
+@@ -13,10 +13,10 @@ cp -rv arch/ ${KERNEL_SRC}/
+ cd ${KERNEL_SRC}
+ 
+ echo "I: clean modified files"
+-git reset --hard HEAD
++#git reset --hard HEAD
+ 
+ KERNEL_VERSION=$(make kernelversion)
+-KERNEL_SUFFIX=-$(dpkg --print-architecture)-vyos
++KERNEL_SUFFIX=-bpi-r3-$(dpkg --print-architecture)-vyos
+ 
+ # VyOS requires some small Kernel Patches - apply them here
+ # It's easier to habe them here and make use of the upstream
