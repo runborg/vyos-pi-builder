@@ -1,0 +1,13 @@
+diff --git a/data/defaults.toml b/data/defaults.toml
+index 5147b97..18132f5 100644
+--- a/data/defaults.toml
++++ b/data/defaults.toml
+@@ -14,7 +14,7 @@ vyos_mirror = "https://rolling-packages.vyos.net/current"
+ vyos_branch = "current"
+ release_train = "current"
+ 
+-kernel_version = "6.1.64"
++kernel_version = "6.6.2"
+ bootloaders = "syslinux,grub-efi"
+ 
+ squashfs_compression_type = "xz -Xbcj x86 -b 256k -always-use-fragments -no-recovery"

@@ -1,0 +1,36 @@
+From 6683cbe11846092664136e28240992466544e948 Mon Sep 17 00:00:00 2001
+From: Paolo Pisati <paolo.pisati@canonical.com>
+Date: Tue, 31 Oct 2023 13:56:54 +0000
+Subject: [PATCH] Linux 6.6 support
+
+Signed-off-by: Paolo Pisati <paolo.pisati@canonical.com>
+---
+ src/mod/common/nl/nl_common.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/src/mod/common/nl/nl_common.c b/src/mod/common/nl/nl_common.c
+index 0a1b7122..f0720f2a 100644
+--- a/src/mod/common/nl/nl_common.c
++++ b/src/mod/common/nl/nl_common.c
+@@ -4,6 +4,7 @@
+ #include "mod/common/init.h"
+ #include "mod/common/log.h"
+ #include "mod/common/nl/nl_core.h"
++#include "mod/common/linux_version.h"
+ 
+ char *get_iname(struct genl_info *info)
+ {
+@@ -14,7 +15,11 @@ char *get_iname(struct genl_info *info)
+ 
+ struct joolnlhdr *get_jool_hdr(struct genl_info *info)
+ {
++#if LINUX_VERSION_LOWER_THAN(6, 6, 0, 0, 0)
+ 	return info->userhdr;
++#else
++	return genl_info_userhdr(info);
++#endif
+ }
+ 
+ static int validate_magic(struct joolnlhdr *hdr)
+-- 
+2.40.1

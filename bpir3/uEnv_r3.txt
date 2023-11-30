@@ -1,0 +1,29 @@
+ipaddr=192.168.1.1
+serverip=192.168.1.254
+loadaddr=0x46000000
+console=earlycon=uart8250,mmio32,0x11002000 console=ttyS0
+
+bootargs=root=/dev/mmcblk0p65
+bootcmd=bootmenu
+bootconf=config-mt7986a-bananapi-bpi-r3
+bootconf_base=config-mt7986a-bananapi-bpi-r3
+bootconf_sd=mt7986a-bananapi-bpi-r3-sd
+bootconf_emmc=mt7986a-bananapi-bpi-r3-emmc
+bootdelay=0
+bootfile=openwrt-mediatek-filogic-bananapi_bpi-r3-initramfs-recovery.itb
+bootfile_upg=openwrt-mediatek-filogic-bananapi_bpi-r3-squashfs-sysupgrade.itb
+bootled_pwr=green:status
+bootled_rec=blue:status
+#mt7986a-bananapi-bpi-r3.dtb
+#mt7986a-bananapi-bpi-r3-sd.dtbo
+load_dtb=load mmc 0:5 0x48000000 mt7986a-bananapi-bpi-r3.dtb && fdt addr 0x48000000 && fdt resize 
+load_dtbo=load mmc 0:5 0x4800F000 mt7986a-bananapi-bpi-r3-sd.dtbo && fdt apply 0x4800F000
+bootmenu_confirm_return=askenv - Press ENTER to return to menu ; bootmenu 60
+bootmenu_default=0
+bootmenu_delay=5
+bootmenu_title=      [0;34m( ( ( [1;39mVyOS BPI-R3 Boot Meny[0;34m ) ) )  [0;36m[SD card][0m
+bootmenu_0=Boot EFI=run bootefi
+bootmenu_1=Boot helloworld=run helloworld
+bootmenu_2=Reboot.=reset
+bootefi=run load_dtb && run load_dtbo && load mmc 0:5 ${loadaddr} efi/debian/grubaa64.efi && bootefi ${loadaddr} 0x48000000
+helloworld=fatload mmc 0:5 $loadaddr helloworld.efi && bootefi $loadaddr

@@ -1,0 +1,2 @@
+ACTION=="add", SUBSYSTEM=="net", DRIVERS=="mtk_soc_eth", ENV{OF_FULLNAME}=="/soc/ethernet@15100000/mac@0", NAME="dsa"
+ACTION=="add", SUBSYSTEM=="net", DRIVERS=="mtk_soc_eth", ENV{OF_FULLNAME}=="/soc/ethernet@15100000/mac@1", NAME="sfp1"

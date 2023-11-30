@@ -1,0 +1,16 @@
+diff --git a/packages/linux-kernel/build-linux-firmware.sh b/packages/linux-kernel/build-linux-firmware.sh
+index 39cb243..5b095ea 100755
+--- a/packages/linux-kernel/build-linux-firmware.sh
++++ b/packages/linux-kernel/build-linux-firmware.sh
+@@ -100,3 +100,11 @@ fpm --input-type dir --output-type deb --name ${VYOS_FIRMWARE_NAME} \
+ 
+ rm -rf "${LINUX_FIRMWARE_BUILD_DIR}"
+ rm -rf ${VYOS_FIRMWARE_DIR}
++
++cd $CWD
++if [[ $? == 0 ]]; then
++    for package in $(ls vyos-linux-firmware*.deb)
++    do
++        ln -sf linux-kernel/$package ..
++    done
++fi
