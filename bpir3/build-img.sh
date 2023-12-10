@@ -2,6 +2,11 @@
 set -x
 set -e
 
+# Ensure GDisk is installes
+if ! dpkg -s gdisk >/dev/null 2>&1; then
+  sudo apt-get install -y gdisk
+fi
+
 IMGDIR=.
 IMGNAME="bpir3"
 REALSIZE=7000
